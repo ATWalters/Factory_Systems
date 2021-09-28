@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Life\\Factory Systems\\Factory Systems.csproj",
+      "projectUniqueName": "D:\\Life\\Factory Systems\\Factory_Systems\\Factory Systems.csproj",
       "projectName": "Factory Systems",
-      "projectPath": "D:\\Life\\Factory Systems\\Factory Systems.csproj",
+      "projectPath": "D:\\Life\\Factory Systems\\Factory_Systems\\Factory Systems.csproj",
       "packagesPath": "C:\\Users\\Austin\\.nuget\\packages\\",
-      "outputPath": "D:\\Life\\Factory Systems\\obj\\",
+      "outputPath": "D:\\Life\\Factory Systems\\Factory_Systems\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Austin\\AppData\\Roaming\\NuGet\\NuGet.Config"
