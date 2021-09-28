@@ -4,26 +4,20 @@ using System.Data.SQLite;
 namespace Factory_Systems{
     class Driver{
         static void Main(string[] args){
-            /*
-            Lines that just make sure I properly installed the SQLite package
-            string cs = "Data Source=:memory:";
-            string stm = "SELECT SQLITE_VERSION()";
+            //Getting the filepath to where the database file is stored
+            Console.WriteLine("Please enter the full location of the database including file name: ");
+            var location = @"Data Source=" + Console.ReadLine();
+            //Location of where I have the database file stored currently
+            //D:\Life\SurfaceRoughnessDB.db3
 
-            using var con = new SQLiteConnection(cs);
+            //Sets up a connection to the database and opens it
+            using var con = new SQLiteConnection(location);
             con.Open();
 
-            using var cmd = new SQLiteCommand(stm, con);
-            string version = cmd.ExecuteScalar().ToString();
-
-            Console.WriteLine($"SQLite version: {version}");
-            */
-
-            //Getting the filepath to where the database file is stored
-            Console.WriteLine("Please enter the full location of the database: ");
-            string location = Console.ReadLine();
-
-            using var con = new SQLiteConnection(location);
-
+            //string stm = "SELECT sTime FROM Tests WHERE test_uid=2";
+            //using var cmd = new SQLiteCommand(stm, con);
+            //string version = cmd.ExecuteScalar().ToString();
+            //Console.WriteLine(version);
 
         }
     }
