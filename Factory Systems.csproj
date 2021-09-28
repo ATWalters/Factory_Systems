@@ -6,4 +6,8 @@
     <RootNamespace>Factory_Systems</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.115" />
+  </ItemGroup>
+
 </Project>
