@@ -20,7 +20,10 @@ namespace Factory_Systems{
 
             //Getting the filepath to where the database file is stored
             Console.WriteLine("Please enter the full location of the database: ");
-            //string location = Console.ReadLine();
+            string location = Console.ReadLine();
+
+            using var con = new SQLiteConnection(location);
+
 
         }
     }
