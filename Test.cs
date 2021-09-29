@@ -16,6 +16,8 @@ namespace Factory_Systems{
 
         private Measurement maxHeight;
 
+        private double meanHeight;
+
 
         public Test(int ID, string planeID){
             this.ID = ID;
@@ -46,6 +48,10 @@ namespace Factory_Systems{
             return this.heightRange;
         }
 
+        public double getMeanHeight(){
+            return this.meanHeight;
+        }
+
         public void addDataPoint(int ID, double X, double Y, double height){
             this.data.Add(new Measurement(ID, X, Y, height));
         }
@@ -56,8 +62,14 @@ namespace Factory_Systems{
 
         public void findMaxMinHeight(){
 
-            //Look into being able to do this with a single SQL statement instead of all of this
-            // that would be faster
+            /*************************************************************************************
+            This problem could also be approached by doing some SQL statements like the ones below
+            SELECT MIN(height) FROM Measurements WHERE test_uid = X; for min and 
+            SELECT MAX(height) FROM Measurements WHERE test_uid = X; for max where X is the test
+            for which you are wanting to find the max and min height for. I wanted to put this here
+            to show another way in which I had thought about approaching the problem before
+            deciding on going with the implementation below that doesn't use any SQL.
+            *************************************************************************************/
 
             //Start max and min at the first index that way we know we are starting
             // with values that are indeed a part of the data
@@ -79,6 +91,15 @@ namespace Factory_Systems{
         }
 
         public double findMeanHeight(){
+
+            /*************************************************************************************
+            This problem could also be approached by doing some SQL statements like the one below
+            SELECT AVG(height) FROM Measurements WHERE test_uid = X; where X is the test for
+            which you are wanting to find the mean height for. I wanted to put this here to show
+            another way in which I had thought about approaching the problem before deciding
+            on going with the implementation below that doesn't use any SQL.
+            *************************************************************************************/
+
             //Start a running total variable
             int runningTotal = 0;
             for(int i = 0; i < this.data.Count; i++){
@@ -86,12 +107,15 @@ namespace Factory_Systems{
                 runningTotal += this.data[i].getHeight();
             }
             //Divide the running total by the number of items in this.data and return
-            return runningTotal / this.data.Count;
+            this.meanHeight = runningTotal / this.data.Count;
+            return this.meanHeight;
+
         }
 
         public double findHeightRange(){
             //Return the max height - min height, this will give the range of heights
-            return this.maxHeight.getHeight() - this.minHeight.getHeight();
+            this.heightRange = this.maxHeight.getHeight() - this.minHeight.getHeight();
+            return this.heightRange;
         }
 
     }
