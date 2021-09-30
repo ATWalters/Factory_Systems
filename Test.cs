@@ -7,6 +7,8 @@ using System.Collections.Generic;
 
 namespace Factory_Systems{
     class Test{
+
+        //The number of measurements for a test to be considered valid        private static int CONSIDERED_VALID = 1000;
         private int ID;
         private string planeID;
         private List<Measurement> data = new List<Measurement>();
@@ -25,9 +27,15 @@ namespace Factory_Systems{
 
         private bool isValidTest;
 
+        private int numMeasurements = 0;
+
         public Test(int ID, string planeID){
             this.ID = ID;
             this.planeID = planeID;
+        }
+
+        public bool isValid(){
+            return this.isValidTest;
         }
 
         public int getID(){
@@ -68,6 +76,15 @@ namespace Factory_Systems{
 
         public void addDataPoint(int ID, double X, double Y, double height){
             this.data.Add(new Measurement(ID, X, Y, height));
+            this.numMeasurements++;
+        }
+
+        public void checkValid(){
+            if(this.numMeasurements == CONSIDERED_VALID){
+                this.isValidTest = true;
+            }else{
+                this.isValidTest = false;
+            }
         }
 
         public void findMaxMinHeight(SQLiteConnection con){
@@ -134,7 +151,7 @@ namespace Factory_Systems{
             to use SQLite queries as they should be faster as well as just more readable for others
 
             //Start a running total variable
-            int runningTotal = 0;
+            double runningTotal = 0;
             for(int i = 0; i < this.data.Count; i++){
                 //Add the height of each Measurement to the running total
                 runningTotal += this.data[i].getHeight();
@@ -159,6 +176,19 @@ namespace Factory_Systems{
 
         public void calcRootMeanSqRoughness(){
             //Calculate 𝜇
+        }
+
+        public void calcRootMeanSqRoughness(){
+
+        }
+
+        private double calcMu(){
+            //Calculate 𝜇
+            double runningTotal = 0;
+            foreach(var h in this.data){
+                runningTotal += h.getHeight();
+            }
+
         }
 
     }
