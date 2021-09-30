@@ -52,6 +52,7 @@ namespace Factory_Systems{
             tests = readData(numTests, con);
 
             Console.WriteLine(tests[0].getData()[0].getHeight());
+            Console.WriteLine("Mean height of test 1: " + tests[0].findMeanHeight(con));
         }
     }
 }

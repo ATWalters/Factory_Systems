@@ -2,6 +2,7 @@
     This file is a class for test objects
 */
 using System;
+using System.Data.SQLite;
 using System.Collections.Generic;
 
 namespace Factory_Systems{
@@ -18,6 +19,11 @@ namespace Factory_Systems{
 
         private double meanHeight;
 
+        private double avgRoughness;
+
+        private double rootMeanSqRoughness;
+
+        private bool isValidTest;
 
         public Test(int ID, string planeID){
             this.ID = ID;
@@ -36,11 +42,11 @@ namespace Factory_Systems{
             return this.data;
         }
 
-        public double getMaxHeight(){
+        public Measurement getMaxHeight(){
             return this.maxHeight;
         }
 
-        public double getMinHeight(){
+        public Measurement getMinHeight(){
             return this.minHeight;
         }
 
@@ -52,24 +58,42 @@ namespace Factory_Systems{
             return this.meanHeight;
         }
 
+        public double getAvgRoughness(){
+            return this.avgRoughness;
+        }
+
+        public double getRootMeanSqRoughness(){
+            return this.rootMeanSqRoughness;
+        }
+
         public void addDataPoint(int ID, double X, double Y, double height){
             this.data.Add(new Measurement(ID, X, Y, height));
         }
 
-        public override string ToString(){
-            return "test_uid: " + this.getID() + "\n PlaneID: " + this.getPlane() + "\n";
-        }
+        public void findMaxMinHeight(SQLiteConnection con){
+            
+            //Setting up two SQLiteCommands to run a query to get max height and get min height
+            using var maxCmd = new SQLiteCommand("SELECT * FROM Measurements WHERE height = (SELECT MAX(height) FROM Measurements WHERE test_uid = " + this.getID() + ");", con);
+            using var minCmd = new SQLiteCommand("SELECT * FROM Measurements WHERE height = (SELECT MIN(height) FROM Measurements WHERE test_uid = " + this.getID() + ");", con);
 
-        public void findMaxMinHeight(){
+            //Reader to read the result of the max height query
+            SQLiteDataReader maxReader = maxCmd.ExecuteReader();
+            maxReader.Read();
+            //Set the maxHeight for this test
+            this.maxHeight = new Measurement(maxReader.GetInt32(0), maxReader.GetDouble(2), maxReader.GetDouble(3), maxReader.GetDouble(4));
+
+            //Reader to read teh result of the min height query
+            SQLiteDataReader minReader = minCmd.ExecuteReader();
+            minReader.Read();
+            //Set the minHeight for this test
+            this.minHeight = new Measurement(minReader.GetInt32(0), minReader.GetDouble(2), minReader.GetDouble(3), minReader.GetDouble(4));
+
 
             /*************************************************************************************
-            This problem could also be approached by doing some SQL statements like the ones below
-            SELECT MIN(height) FROM Measurements WHERE test_uid = X; for min and 
-            SELECT MAX(height) FROM Measurements WHERE test_uid = X; for max where X is the test
-            for which you are wanting to find the max and min height for. I wanted to put this here
-            to show another way in which I had thought about approaching the problem before
-            deciding on going with the implementation below that doesn't use any SQL.
-            *************************************************************************************/
+
+            Another way I had thought about going to accomplish this before deciding it be better
+            to use SQLite queries as they should be faster as well as just more readable for others
+
 
             //Start max and min at the first index that way we know we are starting
             // with values that are indeed a part of the data
@@ -88,17 +112,26 @@ namespace Factory_Systems{
                     this.minHeight = this.data[i];
                 }
             }
+            *************************************************************************************/
+
         }
 
-        public double findMeanHeight(){
+        public double findMeanHeight(SQLiteConnection con){
 
+            using var meanCmd = new SQLiteCommand("SELECT AVG(height) FROM Measurements WHERE test_uid = " + this.getID() + ";", con);
+
+            //Reader to read the result of the max height query
+            SQLiteDataReader meanReader = meanCmd.ExecuteReader();
+            meanReader.Read();
+            //Set the maxHeight for this test
+            this.meanHeight = meanReader.GetDouble(0);
+
+            return this.meanHeight;
+            
             /*************************************************************************************
-            This problem could also be approached by doing some SQL statements like the one below
-            SELECT AVG(height) FROM Measurements WHERE test_uid = X; where X is the test for
-            which you are wanting to find the mean height for. I wanted to put this here to show
-            another way in which I had thought about approaching the problem before deciding
-            on going with the implementation below that doesn't use any SQL.
-            *************************************************************************************/
+
+            Another way I had thought about going to accomplish this before deciding it be better
+            to use SQLite queries as they should be faster as well as just more readable for others
 
             //Start a running total variable
             int runningTotal = 0;
@@ -110,12 +143,22 @@ namespace Factory_Systems{
             this.meanHeight = runningTotal / this.data.Count;
             return this.meanHeight;
 
+            *************************************************************************************/
         }
 
         public double findHeightRange(){
             //Return the max height - min height, this will give the range of heights
             this.heightRange = this.maxHeight.getHeight() - this.minHeight.getHeight();
             return this.heightRange;
+        }
+
+        public void calcAvgRoughness(){
+
+            //Calculate 𝜇
+        }
+
+        public void calcRootMeanSqRoughness(){
+            //Calculate 𝜇
         }
 
     }
