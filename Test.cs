@@ -29,6 +29,8 @@ namespace Factory_Systems{
 
         private int numMeasurements = 0;
 
+        private double Mu;
+
         public Test(int ID, string planeID){
             this.ID = ID;
             this.planeID = planeID;
@@ -72,6 +74,10 @@ namespace Factory_Systems{
 
         public double getRootMeanSqRoughness(){
             return this.rootMeanSqRoughness;
+        }
+
+        public double getMu(){
+            return this.Mu;
         }
 
         public void addDataPoint(int ID, double X, double Y, double height){
@@ -170,26 +176,45 @@ namespace Factory_Systems{
         }
 
         public void calcAvgRoughness(){
+            int m = 10;
+            int n = 10;
 
-            //Calculate 𝜇
-        }
-
-        public void calcRootMeanSqRoughness(){
-            //Calculate 𝜇
-        }
-
-        public void calcRootMeanSqRoughness(){
-
-        }
-
-        private double calcMu(){
-            //Calculate 𝜇
             double runningTotal = 0;
-            foreach(var h in this.data){
-                runningTotal += h.getHeight();
+            for(int i = 0; i < this.data.Count; i++){
+                runningTotal += Math.Abs(this.getData[i].getHeight() - this.getMu());
             }
 
+            this.avgRoughness = runningTotal / (m * n);
+
         }
 
+        public void calcRootMeanSqRoughness(){
+            int m = 10;
+            int n = 10;
+            int power = 2;
+
+            double runningTotal = 0;
+            for(int i = 0; i < this.data.Count; i++){
+                runningTotal += Math.Pow(this.getData[i].getHeight() - this.getMu(), power);
+            }
+
+            runningTotal = runningTotal / (m * n);
+
+            double temp = Math.Pow(runningTotal, 0.5);
+
+            this.rootMeanSqRoughness = temp;
+        }
+
+        private void calcMu(){
+            //Calculate 𝜇
+            int m = 10;
+            int n = 10;
+            double runningTotal = 0;
+
+            for(int i = 0; i < this.data.Count; i++){
+                runningTotal += this.getData[i].getHeight();
+            }
+            this.Mu = runningTotal / (m * n);
+        }
     }
 }
