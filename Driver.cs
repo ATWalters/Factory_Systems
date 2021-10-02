@@ -69,8 +69,8 @@ namespace Factory_Systems{
                 }
             }
 
-            //Build a path to where the generated csv file is to be stored
-            string csvPath = "D:\\awalters.csv";
+            //Store the csv in the same directory as this Driver.cs file
+            string csvPath = "awalters.csv";
             //Write all of the StringBuilder object to the csv file
             File.WriteAllText(csvPath, csvData.ToString());
         }
