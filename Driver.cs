@@ -4,10 +4,14 @@
 using System;
 using System.Data.SQLite;
 using System.Collections.Generic;
+using System.Text;
+using System.IO;
 
 namespace Factory_Systems{
     class Driver{
 
+        //Method that will query the database and build a list of Test objects that contain
+        // the required information
         public static List<Test> readData(int numTests, SQLiteConnection con){
             List<Test> result = new List<Test>();
             for(int i = 1; i <= numTests; i++){
@@ -30,15 +34,55 @@ namespace Factory_Systems{
             return result;
         }
 
+        //Method that will perform all of the necessary calculations for a test if it is considered
+        // to be a valid test. This method should only be called after readData() has been called.
+        public static void performCalculations(List<Test> data, SQLiteConnection con){
+            //Loop through each test in data
+            foreach(var d in data){
+                //Call checkValid method to setup required variables in Test.cs
+                d.checkValid();
+                //If the test is valid then perform all the other calculations, else just move onto the next test in 'data'
+                if(d.isValid()){
+                    d.findMaxMinHeight(con);
+                    d.findMeanHeight(con);
+                    d.findHeightRange();
+                    d.calcAvgRoughness();
+                    d.calcRootMeanSqRoughness();
+                }
+            }
+        }
 
+        //Method that will generate the summary csv file for the database that was given.
+        //This method should only be called after performCalculations() has been called
+        public static void genCSV(List<Test> data){
+            //StringBuilder to store the data to enter into the csv file
+            StringBuilder csvData = new StringBuilder();
+            //Setting up the first line of the csv file
+            csvData.AppendLine("test_uid,PlaneID,Valid Test,Min height and location,Max height and location,Mean height,Height range,Average roughness,Root mean squre roughness");
+            //Loop through data list and append to StringBuilder object
+            for(int i = 0; i < data.Count; i++){
+                //If the test is a valid test append all calculations else only append the test_uid, PlanID and if it is a valid test or not.
+                if(data[i].isValid()){
+                    csvData.AppendLine(data[i].getID() + "," + data[i].getPlane() + "," + data[i].isValid() + "," + data[i].getMinHeight().ToString() + "," + data[i].getMaxHeight().ToString() + "," + data[i].getMeanHeight() + "," + data[i].getHeightRange() + "," + data[i].getAvgRoughness() + "," + data[i].getRootMeanSqRoughness());
+                }else{
+                    csvData.AppendLine(data[i].getID() + "," + data[i].getPlane() + "," + data[i].isValid());
+                }
+            }
+
+            //Store the csv in the same directory as this Driver.cs file
+            string csvPath = "awalters.csv";
+            //Write all of the StringBuilder object to the csv file
+            File.WriteAllText(csvPath, csvData.ToString());
+        }
+
+
+        //Main method, the driver of the program
         static void Main(string[] args){
             List<Test> tests = new List<Test>();
 
             //Getting the filepath to where the database file is stored
             Console.WriteLine("Please enter the full location of the database including file name: ");
             string location = @"Data Source=" + Console.ReadLine();
-            //Location of where I have the database file stored currently
-            //D:\Life\SurfaceRoughnessDB.db3
 
             //Sets up a connection to the database and opens it
             using var con = new SQLiteConnection(location);
@@ -49,10 +93,14 @@ namespace Factory_Systems{
             using var command = new SQLiteCommand(stmt, con);
             int numTests = Int32.Parse(command.ExecuteScalar().ToString());
 
+            //Calling readData() to build the list of data called 'tests'
             tests = readData(numTests, con);
 
-            Console.WriteLine(tests[0].getData()[0].getHeight());
-            Console.WriteLine("Mean height of test 1: " + tests[0].findMeanHeight(con));
+            //Calling performCalculations() against the list of data
+            performCalculations(tests, con);
+
+            //Calling genCSV() to build the summary csv file
+            genCSV(tests);
         }
     }
 }
